@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CausalVerse - NeurIPS 2025 Benchmark</title>
+<link rel="icon" href="causalverse-transparent.png" type="image/png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="icon" href="src/figs/causalverse-transparent.png" type="image/png">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --background-light: #ffffff;
+        --background-soft-light: #f8fafc;
+        --text-primary-light: #1e293b;
+        --text-secondary-light: #475569;
+        --text-muted-light: #64748b;
+        --border-light: #e2e8f0;
+        --primary-accent: #2563eb;
+        --primary-accent-hover: #1e40af;
+        --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+        --background-dark: #0f172a;
+        --background-soft-dark: #1e293b;
+        --text-primary-dark: #e2e8f0;
+        --text-secondary-dark: #94a3b8;
+        --text-muted-dark: #64748b;
+        --border-dark: #334155;
+        --card-shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary-light);
+        background: var(--background-light);
+        transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    .container_video_1600 {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 24px;
+    }
+
+    .theme-toggle-btn {
+        background: none;
+        border: 1px solid var(--border-light);
+        color: var(--text-secondary-light);
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+    .theme-toggle-btn:hover {
+        background: var(--background-soft-light);
+        color: var(--primary-accent);
+    }
+
+
+    /* Hero Section */
+    .hero {
+        background-color: var(--background-light);
+        color: var(--text-primary-light);
+        height: 620px; 
+        padding-top: 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: background 0.3s, color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url('src/figs/back.png');
+        background-size: cover;
+        background-position: center;
+        z-index: 0;
+        transition: background 0.3s;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+   
+    .hero-title-main {
+        font-size: 90px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        color: var(--text-primary-light);
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title-sub {
+        font-size: 30px;
+        font-weight: 500;
+        color: var(--text-secondary-light);
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+   
+    .badge {
+        display: inline-block;
+        background: rgba(30, 41, 59, 0.75);
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-size: 20px;
+        font-weight: 700;
+        border: 1px solid transparent;
+        transition: all 0.3s;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 14px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 2px solid transparent;
+    }
+   
+    .cta-buttons .btn {
+        min-width: 170px;
+        justify-content: center;
+    }
+
+    body:not(.dark-mode) .cta-buttons .btn {
+        background-color: var(--text-primary-light);
+        color: white;
+        border-color: var(--text-primary-light);
+    }
+    body:not(.dark-mode) .cta-buttons .btn:hover {
+        background-color: var(--primary-accent);
+        border-color: var(--primary-accent);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+    }
+
+
+    /* Causal Graph Animation Styles */
+    .animation-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .animated-graph {
+        position: absolute;
+        opacity: 0.15;
+        color: var(--primary-accent);
+        will-change: transform;
+        transition: color 0.3s, opacity 0.3s;
+    }
+   
+    .animated-graph svg {
+        width: 100%;
+        height: auto;
+    }
+
+    .animated-graph.graph-1 { top: 10%; left: 5%; width: 120px; animation: float1 25s infinite linear alternate; }
+    .animated-graph.graph-2 { top: 20%; left: 80%; width: 150px; animation: float2 35s infinite linear alternate; }
+    .animated-graph.graph-3 { top: 70%; left: 15%; width: 160px; animation: float2 28s infinite linear alternate; }
+    .animated-graph.graph-4 { top: 80%; left: 60%; width: 130px; animation: float1 32s infinite linear alternate; }
+    .animated-graph.graph-5 { top: 40%; left: 45%; width: 100px; animation: float2 22s infinite linear alternate; }
+
+    @keyframes float1 {
+        0%   { transform: translateY(20px) translateX(0px) rotate(0deg); }
+        25%  { transform: translateY(-20px) translateX(30px) rotate(90deg); }
+        50%  { transform: translateY(20px) translateX(-30px) rotate(180deg); }
+        75%  { transform: translateY(-20px) translateX(10px) rotate(270deg); }
+        100% { transform: translateY(20px) translateX(0px) rotate(360deg); }
+    }
+
+    @keyframes float2 {
+        0%   { transform: translateY(0px) translateX(-25px) rotate(45deg); }
+        25%  { transform: translateY(25px) translateX(25px) rotate(-45deg); }
+        50%  { transform: translateY(-25px) translateX(-25px) rotate(135deg); }
+        75%  { transform: translateY(15px) translateX(10px) rotate(90deg); }
+        100% { transform: translateY(0px) translateX(-25px) rotate(45deg); }
+    }
+
+    /* TLDR Box */
+    .tldr-box {
+        background-color: var(--background-soft-light);
+        border-left: 5px solid var(--primary-accent);
+        padding: 24px 32px;
+        border-radius: 8px;
+        margin-bottom: 48px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s;
+    }
+   
+    .tldr-box p {
+        font-size: 22px;
+        font-weight: 500;
+        text-align: left;
+        color: var(--text-secondary-light);
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    body.dark-mode .tldr-box {
+        background-color: var(--background-soft-dark);
+        box-shadow: var(--card-shadow-dark);
+    }
+   
+    body.dark-mode .tldr-box p {
+        color: var(--text-secondary-dark);
+    }
+
+    /* Section */
+    section {
+        padding: 80px 0;
+        transition: background 0.3s;
+    }
+
+    section:nth-child(even) {
+        background: var(--background-soft-light);
+    }
+
+    h2, h3 {
+        font-weight: 700;
+        text-align: center;
+        transition: color 0.3s;
+    }
+    h2 {
+        font-size: 36px;
+        margin-bottom: 16px;
+    }
+    h3 {
+        font-size: 28px;
+        margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: var(--text-muted-light);
+        font-size: 18px;
+        margin-bottom: 48px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        transition: color 0.3s;
+    }
+
+    /* Stats & Features */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 32px;
+        margin: 48px 0;
+    }
+   
+    .stat-card, .feature-card, .domain-card {
+        background: var(--background-light);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s;
+    }
+   
+    .stat-card {
+        text-align: center;
+        padding: 32px;
+    }
+   
+    .stat-number {
+        font-size: 42px;
+        font-weight: 800;
+        color: var(--primary-accent);
+        margin-bottom: 8px;
+    }
+   
+    .stat-label {
+        color: var(--text-muted-light);
+        font-weight: 500;
+    }
+   
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px;
+        margin-top: 48px;
+    }
+   
+    .feature-card {
+        padding: 32px;
+    }
+   
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+   
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+   
+    .feature-card h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-align: left;
+    }
+   
+    .feature-card p {
+        color: var(--text-muted-light);
+        line-height: 1.7;
+    }
+
+    /* Dataset Overview */
+    .domains-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 24px;
+        margin-top: 48px;
+    }
+
+    .domain-card {
+        padding: 24px;
+        border-left: 4px solid var(--primary-accent);
+    }
+
+    .domain-card h4 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: var(--primary-accent);
+    }
+
+    .domain-card ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .domain-card li {
+        padding: 6px 0;
+        color: var(--text-secondary-light);
+    }
+
+    .domain-card li:before {
+        content: "→";
+        margin-right: 8px;
+        color: var(--primary-accent);
+    }
+
+    /* Data variable section layout */
+    .variables-section-content {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 48px;
+    }
+    .variables-table-wrapper {
+        flex: 2;
+        min-width: 0;
+    }
+    .variables-video-wrapper {
+        flex: 1;
+        max-width: 350px;
+    }
+    .variables-video-wrapper video {
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+    }
+
+    /* General Table Styles */
+    .table-container {
+        overflow-x: auto;
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        background: var(--background-light);
+    }
+    .data-variables-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .data-variables-table th, .data-variables-table td {
+        padding: 16px 24px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-light);
+        white-space: nowrap;
+    }
+    .data-variables-table th {
+        background-color: var(--background-soft-light);
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-secondary-light);
+    }
+    .data-variables-table td {
+        font-size: 15px;
+        color: var(--text-secondary-light);
+    }
+    .data-variables-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .data-variables-table code {
+        background: var(--background-soft-light);
+        border: 1px solid var(--border-light);
+        padding: 3px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+    }
+    body.dark-mode .table-container {
+        border-color: var(--border-dark);
+        background: var(--background-soft-dark);
+        box-shadow: var(--card-shadow-dark);
+    }
+    body.dark-mode .data-variables-table th {
+        background-color: #28364d;
+        color: var(--text-secondary-dark);
+        border-bottom-color: var(--border-dark);
+    }
+    body.dark-mode .data-variables-table td {
+        border-bottom-color: var(--border-dark);
+        color: var(--text-secondary-dark);
+    }
+    body.dark-mode .data-variables-table code {
+        background: #182235;
+        border-color: var(--border-dark);
+    }
+
+    /* Showcase Styles */
+    .showcase-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        background: var(--background-soft-light);
+        padding: 24px;
+        border-radius: 16px;
+        margin-bottom: 24px;
+        box-shadow: var(--card-shadow);
+    }
+    .showcase-description {
+        flex: 0 0 25%;
+        max-width: 300px;
+    }
+    .showcase-description h4 {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--primary-accent);
+        margin-bottom: 8px;
+        text-align: left;
+    }
+    .showcase-description p {
+        margin-bottom: 16px;
+        color: var(--text-secondary-light);
+    }
+    .showcase-grid {
+        flex: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .showcase-item video, .showcase-item img {
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: block;
+    }
+    .showcase-item p {
+        text-align: center;
+        margin-top: 8px;
+        font-weight: 500;
+        color: var(--text-muted-light);
+    }
+    body.dark-mode .showcase-row {
+        background: var(--background-soft-dark);
+        box-shadow: var(--card-shadow-dark);
+    }
+    body.dark-mode .showcase-description p {
+        color: var(--text-secondary-dark);
+    }
+    body.dark-mode .showcase-item p {
+        color: var(--text-muted-dark);
+    }
+
+    /* Play Button */
+    .play-button {
+        display: inline-flex;
+        align-items: center;
+        background: var(--primary-accent);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .play-button:hover {
+        background: var(--primary-accent-hover);
+    }
+    .play-button i { margin-right: 8px; }
+
+    /* --- CORRECTED EVALUATION TABLE STYLES --- */
+    .eval-toggle-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 40px;
+        background: var(--background-soft-light);
+        padding: 6px;
+        border-radius: 10px;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+        border: 1px solid var(--border-light);
+    }
+    .eval-toggle-btn {
+        padding: 10px 24px;
+        border: none;
+        background: transparent;
+        color: var(--text-muted-light);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .eval-toggle-btn.active {
+        background: var(--background-light);
+        color: var(--primary-accent);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .table-wrapper {
+        overflow-x: auto;
+        border: 1px solid var(--border-light);
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        background: var(--background-light);
+        transition: all 0.3s;
+    }
+    .evaluation-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+    }
+    .evaluation-table thead th {
+        background-color: var(--background-soft-light);
+        padding: 18px 24px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 15px; 
+        color: var(--text-secondary-light);
+        text-transform: uppercase; 
+        letter-spacing: 0.5px; 
+        border-bottom: 2px solid var(--border-light);
+    }
+    .evaluation-table tbody td {
+        padding: 18px 24px;
+        font-size: 15px;
+        color: var(--text-secondary-light);
+        border-bottom: 1px solid var(--border-light);
+        vertical-align: middle;
+        transition: background-color 0.2s;
+        /* REMOVED font-weight from general td rule */
+    }
+    .evaluation-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    .evaluation-table tbody tr:hover {
+        background-color: #eff6ff;
+    }
+    .evaluation-table .scene-cell {
+        font-weight: 700; /* This is the ONLY bolded text in the table body */
+        color: var(--text-primary-light);
+        background-color: var(--background-soft-light);
+        border-right: 2px solid var(--border-light);
+    }
+    .evaluation-table .link-icon {
+        color: var(--text-muted-light);
+        font-size: 20px;
+        text-decoration: none;
+        transition: color 0.2s;
+        margin: 0 8px;
+    }
+    .evaluation-table .link-icon:hover {
+        color: var(--primary-accent);
+    }
+    
+    /* Dark Mode for Evaluation Table */
+    body.dark-mode .eval-toggle-container {
+        background: var(--background-soft-dark);
+        border-color: var(--border-dark);
+    }
+    body.dark-mode .eval-toggle-btn {
+        color: var(--text-muted-dark);
+    }
+    body.dark-mode .eval-toggle-btn.active {
+        background: var(--background-dark);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    body.dark-mode .table-wrapper {
+        border-color: var(--border-dark);
+        background: var(--background-soft-dark);
+        box-shadow: var(--card-shadow-dark);
+    }
+    body.dark-mode .evaluation-table thead th {
+        background-color: #28364d;
+        color: var(--text-secondary-dark);
+        border-bottom-color: var(--border-dark);
+    }
+    body.dark-mode .evaluation-table tbody td {
+        border-bottom-color: var(--border-dark);
+        color: var(--text-secondary-dark);
+    }
+    body.dark-mode .evaluation-table tbody tr:hover {
+        background-color: #28364d;
+    }
+    body.dark-mode .evaluation-table .scene-cell {
+        color: var(--text-primary-dark);
+        background-color: #28364d;
+        border-right-color: var(--border-dark);
+    }
+    body.dark-mode .evaluation-table .link-icon {
+        color: var(--text-muted-dark);
+    }
+    /* --- END OF CORRECTED STYLES --- */
+
+
+    /* Citation & Footer */
+    .citation-box {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 24px;
+        border-radius: 12px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        overflow-x: auto;
+        margin-top: 24px;
+        position: relative;
+    }
+
+    .copy-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: #475569;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+    }
+    .copy-btn:hover { background: #64748b; }
+
+    footer {
+        background: #1e293b;
+        color: white;
+        padding: 48px 0;
+        text-align: center;
+    }
+    footer a {
+        color: #94a3b8;
+        text-decoration: none;
+        margin: 0 12px;
+    }
+    footer a:hover { color: white; }
+
+    /* General Dark Mode Styles */
+    body.dark-mode {
+        background: var(--background-dark);
+        color: var(--text-primary-dark);
+    }
+    body.dark-mode .theme-toggle-btn {
+        border: 1px solid var(--border-dark);
+        color: var(--text-secondary-dark);
+    }
+    body.dark-mode .theme-toggle-btn:hover {
+        background: var(--background-soft-dark);
+    }
+    body.dark-mode .hero {
+        color: white;
+        background-color: #0f172a;
+    }
+    body.dark-mode .hero::before {
+        background: linear-gradient(135deg, #4c5a9e 0%, #583380 100%);
+    }
+    body.dark-mode .animated-graph {
+        opacity: 0.1;
+        color: #e2e8f0;
+    }
+    body.dark-mode .hero-title-main {
+        background: none;
+        -webkit-background-clip: unset;
+        -webkit-text-fill-color: unset;
+        color: white;
+    }
+    body.dark-mode .hero-title-sub {
+        color: rgba(255, 255, 255, 0.95);
+    }
+    body.dark-mode .badge {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid transparent;
+    }
+    body.dark-mode .cta-buttons .btn.btn-primary {
+        background: white;
+        color: #4c5a9e;
+        border-color: white;
+    }
+    body.dark-mode .cta-buttons .btn.btn-primary:hover {
+        background: #e2e8f0;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    body.dark-mode .cta-buttons .btn.btn-secondary {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 2px solid white;
+    }
+    body.dark-mode .cta-buttons .btn.btn-secondary:hover {
+        background: white;
+        color: #4c5a9e;
+    }
+    body.dark-mode section:nth-child(even) { background: var(--background-soft-dark); }
+    body.dark-mode #overview { background: var(--background-dark); }
+    body.dark-mode #results { background: var(--background-soft-dark); }
+    body.dark-mode #evaluation { background: var(--background-dark); }
+    body.dark-mode .section-subtitle, body.dark-mode .stat-label, body.dark-mode .feature-card p {
+        color: var(--text-secondary-dark);
+    }
+    body.dark-mode .stat-card, body.dark-mode .feature-card, body.dark-mode .domain-card {
+        background: var(--background-soft-dark);
+        box-shadow: var(--card-shadow-dark);
+        border-color: var(--border-dark);
+    }
+    body.dark-mode .feature-card:hover {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+    }
+    body.dark-mode .domain-card li { color: var(--text-secondary-dark); }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .variables-section-content {
+            flex-direction: column;
+            gap: 24px;
+        }
+        .variables-table-wrapper,
+        .variables-video-wrapper {
+            flex: none;
+            width: 100%;
+            max-width: 100%;
+        }
+        .showcase-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .showcase-description {
+            max-width: 100%;
+        }
+    }
+    @media (max-width: 768px) {
+        .hero-title-main { font-size: 52px; }
+        .hero-title-sub { font-size: 18px; }
+        .stats-grid, .features-grid, .domains-grid { grid-template-columns: 1fr; }
+        .animated-graph { display: none; }
+    }
+</style>
+
+</head>
+<body>
+<section class="hero">
+    <div class="animation-container">
+        <div class="animated-graph graph-1">
+            <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <defs><marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+                <path d="M 40 50 L 140 50" marker-end="url(#arrow)"/>
+                <circle cx="30" cy="50" r="15"/><circle cx="170" cy="50" r="15"/>
+            </svg>
+        </div>
+        <div class="animated-graph graph-2">
+            <svg viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <defs><marker id="arrow2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+                <path d="M 40 50 L 130 50" marker-end="url(#arrow2)"/><path d="M 170 50 L 260 50" marker-end="url(#arrow2)"/>
+                <circle cx="30" cy="50" r="15"/><circle cx="150" cy="50" r="15"/><circle cx="270" cy="50" r="15"/>
+            </svg>
+        </div>
+        <div class="animated-graph graph-3">
+            <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <defs><marker id="arrow3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+                <path d="M 100 40 L 40 110" marker-end="url(#arrow3)"/><path d="M 100 40 L 160 110" marker-end="url(#arrow3)"/>
+                <circle cx="100" cy="30" r="15"/><circle cx="30" cy="120" r="15"/><circle cx="170" cy="120" r="15"/>
+            </svg>
+        </div>
+        <div class="animated-graph graph-4">
+            <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <defs><marker id="arrow4" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/></marker></defs>
+                <path d="M 40 30 L 100 110" marker-end="url(#arrow4)"/><path d="M 160 30 L 100 110" marker-end="url(#arrow4)"/>
+                <circle cx="30" cy="30" r="15"/><circle cx="170" cy="30" r="15"/><circle cx="100" cy="120" r="15"/>
+            </svg>
+        </div>
+        <div class="animated-graph graph-5">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="50" cy="50" r="30"/>
+                <path d="M 50 20 v -10"/> <path d="M 50 80 v 10"/> <path d="M 20 50 h -10"/> <path d="M 80 50 h 10"/>
+            </svg>
+        </div>
+    </div>
+   
+    <div class="container hero-content">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 16px;">
+            <img src="src/figs/causalverse-transparent.png" alt="CausalVerse Logo" style="height: 110px;">
+            <h1 class="hero-title-main" style="margin-bottom: 0;">CausalVerse</h1>
+        </div>
+        <div class="badge" style="margin-bottom: 32px;">NeurIPS 2025 (Spotlight)</div>
+        <p class="hero-title-sub" style="margin-bottom: 60px; color:#0f172a"><b>Benchmarking Causal Representation Learning with Configurable High-Fidelity Simulations</b></p>
+        <div class="cta-buttons">
+            <a href="#" class="btn btn-primary" target="_blank">
+                <i class="fas fa-file-pdf"></i> Paper
+            </a>
+            <a href="https://github.com/CausalVerse/CausalVerse" class="btn btn-secondary" target="_blank">
+                <i class="fab fa-github"></i> Code
+            </a>
+            <a href="https://huggingface.co/CausalVerse" class="btn btn-secondary" target="_blank">
+                <i class="fas fa-database"></i> Data
+            </a>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container">
+        <h2 style="text-align: left; font-size: 32px; margin-bottom: 24px;">TL;DR</h2>
+        <div class="tldr-box">
+            <p>
+                CausalVerse is the first comprehensive benchmark for causal representation learning with controllable high-fidelity simulations. It allows users to inspect, modify, and configure causal graphs to match various CRL assumptions and tasks, and provides empirical insights to guide researchers in selecting or improving CRL frameworks for real-world causal reasoning. 
+            </p>
+        </div>
+        <video style="width: 100%; border-radius: 12px; box-shadow: var(--card-shadow);" muted controls preload="auto">
+            <source src="src/nav_video.mp4" type="video/mp4">
+        </video>
+    </div>
+</section>
+
+<section id="overview">
+    <div class="container">
+        <h2>Dataset Overview</h2>
+       
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">~200k</div>
+                <div class="stat-label">Images</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">~140k</div>
+                <div class="stat-label">Videos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">300M+</div>
+                <div class="stat-label">Video Frames</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Scenes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Domains</div>
+            </div>
+        </div>
+       
+        <div class="domains-grid">
+            <div class="domain-card">
+                <h4>Static Image Generation</h4>
+                <ul>
+                    <li>Human in Retail Store (11.2k)</li>
+                    <li>Indoor environments</li>
+                    <li>Varying poses & appearances</li>
+                    <li>Multiple lighting conditions</li>
+                </ul>
+            </div>
+            <div class="domain-card">
+                <h4>Physical Simulation</h4>
+                <ul>
+                    <li>Cylinder Spring (40k images)</li>
+                    <li>Simple Collision (20k videos)</li>
+                    <li>Projectile motion</li>
+                    <li>Object interactions</li>
+                </ul>
+            </div>
+            <div class="domain-card">
+                <h4>Robotic Manipulation</h4>
+                <ul>
+                    <li>Robot in Kitchen (2.7k videos)</li>
+                    <li>Multi-view capture</li>
+                    <li>Object-centric tasks</li>
+                    <li>Embodied agents</li>
+                </ul>
+            </div>
+            <div class="domain-card">
+                <h4>Traffic Analysis</h4>
+                <ul>
+                    <li>Traffic in Town01 (1.97k videos)</li>
+                    <li>Multi-agent interactions</li>
+                    <li>Urban environments</li>
+                    <li>Variable conditions</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 48px; text-align: center;">
+            <p style="color: var(--text-muted-light); margin-bottom: 16px;">
+                <strong>Key Features:</strong> 3-129 latent variables per scene | 
+                1024×1024 and 800×600 resolutions | 
+                3-32 second video durations | 
+                Multi-camera viewpoints
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-check-circle"></i></div>
+                <h3>Ground Truth Access</h3>
+                <p>Complete access to causal variables, structures, and generation processes with high-fidelity visual data</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+                <h3>Diverse Scenarios</h3>
+                <p>From static to dynamic, single to multi-agent, covering physical simulations, robotics, and traffic</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                <h3>Configurable Settings</h3>
+                <p>Flexible control over causal assumptions, domain labels, temporal dependencies, and interventions</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>Rigorous Evaluation</h3>
+                <p>Test CRL methods under both satisfied and unmet assumptions with standardized metrics</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="variables">
+    <div class="container">
+        <h2>Configuration Example</h2>
+        <p class="section-subtitle">
+            Each scene provides detailed ground-truth variables. Below is an example of the available metadata structure, which is consistent across the dataset.
+        </p>
+        <div class="variables-section-content">
+            <div class="variables-table-wrapper">
+                <div class="table-container">
+                    <table class="data-variables-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Sub-category</th>
+                                <th>Variable</th>
+                                <th>Dim.</th>
+                                <th>Type</th>
+                                <th>Range</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Global</td>
+                                <td>Scene</td>
+                                <td><code>scene</code></td>
+                                <td>(1,)</td>
+                                <td>D</td>
+                                <td>6 types</td>
+                                <td>Scene name/identifier</td>
+                            </tr>
+                            <tr>
+                                <td>Global</td>
+                                <td>Scene</td>
+                                <td><code>gravity</code></td>
+                                <td>(1,)</td>
+                                <td>C</td>
+                                <td>-</td>
+                                <td>Acceleration of gravity</td>
+                            </tr>
+                            <tr>
+                                <td>Global</td>
+                                <td>Object</td>
+                                <td><code>render_asset</code></td>
+                                <td>(1,)</td>
+                                <td>D</td>
+                                <td>90 types</td>
+                                <td>Specifies visual appearance</td>
+                            </tr>
+                            <tr>
+                                <td>Dynamic</td>
+                                <td>Object</td>
+                                <td><code>position</code></td>
+                                <td>(T,3)</td>
+                                <td>C</td>
+                                <td>-</td>
+                                <td>3D coordinates across time</td>
+                            </tr>
+                            <tr>
+                                <td>Dynamic</td>
+                                <td>Object</td>
+                                <td><code>rotation</code></td>
+                                <td>(T,3)</td>
+                                <td>C</td>
+                                <td>-</td>
+                                <td>Euler angles across time</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="variables-video-wrapper">
+                <video muted controls loop preload="auto">
+                    <source src="src/sample/0b339ad1c58a4977b5320c6d8e60e194_right_color.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="results">
+    <div class="container">
+        <h2>Data Showcase</h2>
+        <p class="section-subtitle" style="margin-bottom: 24px;">
+            Sample videos from different domains in CausalVerse, showcasing the variety of scenes and viewpoints available.
+        </p>
+    </div>
+    <div class="container_video_1600">
+        <div class="showcase-row">
+            <div class="showcase-description">
+                <h4>Static Image Generation</h4>
+                <p><strong>Scene:</strong> Scene1-4</p>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-item">
+                    <img src="src/sample/scene1.png" alt="Static Scene 1">
+                    <p>Scene1</p>
+                </div>
+                <div class="showcase-item">
+                    <img src="src/sample/scene2.png" alt="Static Scene 2">
+                    <p>Scene2</p>
+                </div>
+                <div class="showcase-item">
+                    <img src="src/sample/scene3.png" alt="Static Scene 3">
+                    <p>Scene3</p>
+                </div>
+                <div class="showcase-item">
+                    <img src="src/sample/scene4.png" alt="Static Scene 4">
+                    <p>Scene4</p>
+                </div>
+            </div>
+        </div>
+        <div class="showcase-row">
+            <div class="showcase-description">
+                <h4>Physical Simulation (Image)</h4>
+                <p><strong>Scene:</strong> Fall, Refraction, Slope, Spring</p>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-item">
+                    <img src="src/sample/fall1.png" alt="Fall Simulation">
+                    <p>Fall</p>
+                </div>
+                <div class="showcase-item">
+                    <img src="src/sample/refraction1.png" alt="Refraction Simulation">
+                    <p>Refraction</p>
+                </div>
+                <div class="showcase-item">
+                    <img src="src/sample/slope1.png" alt="Slope Simulation">
+                    <p>Slope</p>
+                </div>
+                <div class="showcase-item">
+                    <img src="src/sample/spring1.jpg" alt="Spring Simulation">
+                    <p>Spring</p>
+                </div>
+            </div>
+        </div>
+        <div class="showcase-row">
+            <div class="showcase-description">
+                <h4>Physical Simulation (Video)</h4>
+                <p><strong>Scene:</strong> Projectile_Hard</p>
+                <button onclick="playAllVideosInParent(this)" class="play-button">
+                    <i class="fas fa-play"></i> Play All
+                </button>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a18ce3533c8447fbb749cf445651a35_bird_color.mp4" type="video/mp4"></video>
+                    <p>Birdview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a18ce3533c8447fbb749cf445651a35_front_color.mp4" type="video/mp4"></video>
+                    <p>Frontview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a18ce3533c8447fbb749cf445651a35_left_color.mp4" type="video/mp4"></video>
+                    <p>Leftview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a18ce3533c8447fbb749cf445651a35_right_color.mp4" type="video/mp4"></video>
+                    <p>Rightview</p>
+                </div>
+            </div>
+        </div>
+        <div class="showcase-row">
+            <div class="showcase-description">
+                <h4>Robotic Manipulation</h4>
+                <p><strong>Scene:</strong> Kitchen</p>
+                <button onclick="playAllVideosInParent(this)" class="play-button">
+                    <i class="fas fa-play"></i> Play All
+                </button>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a6bef641553454dbf2377157c1ced44_agentview.mp4" type="video/mp4"></video>
+                    <p>Agentview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a6bef641553454dbf2377157c1ced44_birdview.mp4" type="video/mp4"></video>
+                    <p>Birdview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a6bef641553454dbf2377157c1ced44_frontview.mp4" type="video/mp4"></video>
+                    <p>Frontview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a6bef641553454dbf2377157c1ced44_robot0_eye_in_hand.mp4" type="video/mp4"></video>
+                    <p>Eyeview</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/0a6bef641553454dbf2377157c1ced44_sideview.mp4" type="video/mp4"></video>
+                    <p>Sideview</p>
+                </div>
+            </div>
+        </div>
+        <div class="showcase-row">
+            <div class="showcase-description">
+                <h4>Traffic Situation Analysis</h4>
+                <p><strong>Scenes:</strong> Town1 & Town2</p>
+                <button onclick="playAllVideosInParent(this)" class="play-button">
+                    <i class="fas fa-play"></i> Play All
+                </button>
+            </div>
+            <div class="showcase-grid">
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/20250514_103148_000010189.mp4" type="video/mp4"></video>
+                    <p>Town1</p>
+                </div>
+                <div class="showcase-item">
+                    <video muted controls loop preload="auto"><source src="src/sample/20250514_111121_000010494.mp4" type="video/mp4"></video>
+                    <p>Town2</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="evaluation">
+    <div class="container">
+        <h2>Evaluation</h2>
+        <p class="section-subtitle">
+            Evaluation on Mean Correlation Coefficient (MCC) and Coefficient of Determination (R²) for both image and video data.
+        </p>
+
+        <div class="eval-toggle-container">
+            <button id="btn-image" class="eval-toggle-btn active" onclick="showTable('image')">Image</button>
+            <button id="btn-video" class="eval-toggle-btn" onclick="showTable('video')">Video</button>
+        </div>
+
+        <div id="image-table" class="table-wrapper">
+            <table class="evaluation-table">
+                <thead>
+                    <tr>
+                        <th>Scene</th>
+                        <th>Method</th>
+                        <th>MCC &uparrow;</th>
+                        <th>R² &uparrow;</th>
+                        <th style="text-align: center;">Links</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="5" class="scene-cell">Ball on the Slope</td>
+                        <td>Supervised</td>
+                        <td>0.9878</td>
+                        <td>0.9962</td>
+                        <td style="text-align: center;">-</td>
+                    </tr>
+                    <tr>
+                        <td>Sufficient Change</td>
+                        <td>0.4434</td>
+                        <td>0.9630</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mechanism Sparsity</td>
+                        <td>0.2491</td>
+                        <td>0.3242</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Self-supervised</td>
+                        <td>0.4109</td>
+                        <td>0.9658</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Contrastive Learning</td>
+                        <td>0.2853</td>
+                        <td>0.9604</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="5" class="scene-cell">Cylinder Spring</td>
+                        <td>Supervised</td>
+                        <td>0.9970</td>
+                        <td>0.9910</td>
+                        <td style="text-align: center;">-</td>
+                    </tr>
+                    <tr>
+                        <td>Sufficient Change</td>
+                        <td>0.6092</td>
+                        <td>0.9344</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mechanism Sparsity</td>
+                        <td>0.3353</td>
+                        <td>0.2340</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Self-supervised</td>
+                        <td>0.4523</td>
+                        <td>0.7841</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Contrastive Learning</td>
+                        <td>0.6342</td>
+                        <td>0.9920</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="5" class="scene-cell">Light Refraction</td>
+                        <td>Supervised</td>
+                        <td>0.9900</td>
+                        <td>0.9800</td>
+                        <td style="text-align: center;">-</td>
+                    </tr>
+                    <tr>
+                        <td>Sufficient Change</td>
+                        <td>0.6778</td>
+                        <td>0.8420</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mechanism Sparsity</td>
+                        <td>0.1836</td>
+                        <td>0.4067</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Self-supervised</td>
+                        <td>0.3363</td>
+                        <td>0.7841</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Contrastive Learning</td>
+                        <td>0.3773</td>
+                        <td>0.9677</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="video-table" class="table-wrapper" style="display: none;">
+            <table class="evaluation-table">
+                <thead>
+                    <tr>
+                        <th>Scene</th>
+                        <th>Method</th>
+                        <th>MCC &uparrow;</th>
+                        <th>R² &uparrow;</th>
+                        <th style="text-align: center;">Links</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="5" class="scene-cell">Fall Simple</td>
+                        <td>IDOL</td>
+                        <td>0.2527</td>
+                        <td>0.5901</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CaRiNG</td>
+                        <td>0.2280</td>
+                        <td>0.5457</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TDRL</td>
+                        <td>0.2003</td>
+                        <td>0.5525</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TCL</td>
+                        <td>0.1717</td>
+                        <td>0.4892</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>iVAE</td>
+                        <td>0.1881</td>
+                        <td>0.5233</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td rowspan="5" class="scene-cell">Robotics Study</td>
+                        <td>IDOL</td>
+                        <td>0.2500</td>
+                        <td>0.6503</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CaRiNG</td>
+                        <td>0.2225</td>
+                        <td>0.6476</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TDRL</td>
+                        <td>0.2440</td>
+                        <td>0.6394</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TCL</td>
+                        <td>0.2163</td>
+                        <td>0.6150</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>iVAE</td>
+                        <td>0.1948</td>
+                        <td>0.6165</td>
+                        <td style="text-align: center;">
+                            <a href="#" class="link-icon" title="Paper"><i class="fas fa-file-pdf"></i></a>
+                            <a href="#" class="link-icon" title="Code"><i class="fab fa-github"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</section>
+<section id="citation">
+    <div class="container">
+        <h2>Citation</h2>
+        <p class="section-subtitle">If you find our work useful, please consider citing our paper:</p>
+       
+        <div class="citation-box">
+            <button class="copy-btn" onclick="copyBibtex()">
+                <i class="fas fa-copy"></i> Copy
+            </button>
+            <pre>@inproceedings{chen2025causalverse,
+title     = {CausalVerse: Benchmarking Causal Representation Learning with Configurable High-Fidelity Simulations},
+author    = {Chen, Guangyi and Deng, Yunlong and Zhu, Peiyuan and Li, Yan and Shen, Yifan and Li, Zijian and Zhang, Kun},
+booktitle = {Advances in Neural Information Processing Systems},
+year      = {2025}
+}</pre>
+</div>
+</div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 CausalVerse. All rights reserved.</p>
+        <div style="margin-top: 16px; display: flex; justify-content: center; align-items: center; gap: 16px;">
+            <a href="mailto:causalverse@yeah.net">Contact: causalverse@yeah.net</a>
+            <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // --- Video Player Functions ---
+    function playAllVideosInParent(button) {
+        const parentRow = button.closest('.showcase-row');
+        if (parentRow) {
+            const videos = parentRow.querySelectorAll('video');
+            videos.forEach(video => {
+                video.currentTime = 0;
+                video.play();
+            });
+        }
+    }
+
+    // --- BibTeX Copy Function ---
+    function copyBibtex() {
+        const bibtex = document.querySelector('.citation-box pre').textContent;
+        navigator.clipboard.writeText(bibtex).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            }, 2000);
+        });
+    }
+   
+    // --- Theme Toggle Functionality ---
+    const themeToggleButton = document.getElementById('theme-toggle');
+    const body = document.body;
+    const themeIcon = themeToggleButton.querySelector('i');
+
+    const applyTheme = (theme) => {
+        if (theme === 'dark') {
+            body.classList.add('dark-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            body.classList.remove('dark-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
+    };
+
+    themeToggleButton.addEventListener('click', () => {
+        const isDarkMode = body.classList.contains('dark-mode');
+        const newTheme = isDarkMode ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme);
+        applyTheme(newTheme);
+    });
+
+    // --- Evaluation Table Toggle ---
+    function showTable(type) {
+        const imageTable = document.getElementById('image-table');
+        const videoTable = document.getElementById('video-table');
+        const imageBtn = document.getElementById('btn-image');
+        const videoBtn = document.getElementById('btn-video');
+
+        imageTable.style.display = 'none';
+        videoTable.style.display = 'none';
+        imageBtn.classList.remove('active');
+        videoBtn.classList.remove('active');
+
+        if (type === 'image') {
+            imageTable.style.display = 'block';
+            imageBtn.classList.add('active');
+        } else if (type === 'video') {
+            videoTable.style.display = 'block';
+            videoBtn.classList.add('active');
+        }
+    }
+
+    // --- Run on Page Load ---
+    document.addEventListener("DOMContentLoaded", function() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            video.addEventListener('loadedmetadata', () => {
+                video.currentTime = 0.1;
+            });
+        });
+       
+        showTable('image'); 
+    });
+</script>
+
+</body>
+</html>

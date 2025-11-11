@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research - CausalVerse</title>
+    <link rel="icon" href="src/figs/causalverse-transparent.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --background-light: #ffffff;
+            --background-soft-light: #f8fafc;
+            --text-primary-light: #1e293b;
+            --text-secondary-light: #475569;
+            --text-muted-light: #64748b;
+            --border-light: #e2e8f0;
+            --primary-accent: #2563eb;
+            --primary-accent-hover: #1e40af;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+            --background-dark: #0f172a;
+            --background-soft-dark: #1e293b;
+            --text-primary-dark: #e2e8f0;
+            --text-secondary-dark: #94a3b8;
+            --text-muted-dark: #64748b;
+            --border-dark: #334155;
+            --card-shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary-light);
+            background: var(--background-light);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-light);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s, border-bottom 0.3s;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 36px;
+            width: auto;
+        }
+        
+        .logo span {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-accent);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-accent);
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary-light);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .theme-toggle-btn:hover {
+            background: var(--background-soft-light);
+            color: var(--primary-accent);
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid transparent;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-accent-hover);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-secondary-light);
+            border: 2px solid var(--border-light);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--background-soft-light);
+            color: var(--primary-accent);
+        }
+
+        /* Section */
+        section {
+            padding: 80px 0;
+            transition: background 0.3s;
+        }
+        .page-title-section {
+            background: var(--background-soft-light);
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 42px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted-light);
+            font-size: 18px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: color 0.3s;
+        }
+
+        /* Paper Cards */
+        .paper-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 48px;
+            margin-top: 48px;
+        }
+        .paper-card {
+            background: var(--background-light);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 32px;
+            border-left: 4px solid var(--primary-accent);
+            transition: all 0.3s;
+        }
+        .paper-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        .paper-card h3 {
+            text-align: left;
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary-accent);
+            font-weight: 700;
+        }
+        .paper-card .authors-list {
+            text-align: left;
+            font-size: 16px;
+            color: var(--text-secondary-light);
+            margin-bottom: 8px;
+        }
+        .paper-card .venue {
+            text-align: left;
+            font-style: italic;
+            font-weight: 500;
+            color: var(--text-muted-light);
+            margin-bottom: 16px;
+        }
+        .paper-card .abstract {
+            text-align: left;
+            color: var(--text-secondary-light);
+            margin-bottom: 24px;
+            line-height: 1.7;
+        }
+        .paper-card .paper-links {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 48px 0;
+            text-align: center;
+        }
+        footer a {
+            color: #94a3b8;
+            text-decoration: none;
+            margin: 0 12px;
+        }
+        footer a:hover { color: white; }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: var(--background-dark);
+            color: var(--text-primary-dark);
+        }
+        body.dark-mode header {
+            background: rgba(15, 23, 42, 0.85);
+            border-bottom: 1px solid var(--border-dark);
+        }
+        body.dark-mode .nav-links a { color: var(--text-secondary-dark); }
+        body.dark-mode .nav-links a:hover { color: var(--primary-accent); }
+        
+        body.dark-mode .theme-toggle-btn {
+            border: 1px solid var(--border-dark);
+            color: var(--text-secondary-dark);
+        }
+        body.dark-mode .theme-toggle-btn:hover {
+            background: var(--background-soft-dark);
+        }
+
+        body.dark-mode .btn-secondary {
+            color: var(--text-secondary-dark);
+            border-color: var(--border-dark);
+        }
+        body.dark-mode .btn-secondary:hover {
+            background-color: var(--background-soft-dark);
+            color: var(--primary-accent);
+        }
+
+        body.dark-mode .page-title-section {
+            background: var(--background-soft-dark);
+        }
+        body.dark-mode .section-subtitle {
+            color: var(--text-secondary-dark);
+        }
+        body.dark-mode .paper-card {
+            background: var(--background-soft-dark);
+            box-shadow: var(--card-shadow-dark);
+            border-color: var(--primary-accent);
+        }
+        body.dark-mode .paper-card .authors-list,
+        body.dark-mode .paper-card .abstract {
+            color: var(--text-secondary-dark);
+        }
+        body.dark-mode .paper-card .venue {
+            color: var(--text-muted-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <a href="index.html" class="logo">
+                    <img src="src/figs/causalverse-transparent.png" alt="CausalVerse Logo" class="logo-img">
+                    <span>CausalVerse</span>
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#dataset">Dataset</a></li>
+                    <li><a href="index.html#results">Results</a></li>
+                    <li><a href="research.html">Research</a></li>
+                    <li>
+                        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle dark mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-title-section">
+            <div class="container">
+                <h2>Our Research</h2>
+                <p class="section-subtitle">
+                    Exploring the frontiers of causality in machine learning, from foundational theory to practical applications in computer vision and robotics.
+                </p>
+            </div>
+        </section>
+
+        <section id="publications">
+            <div class="container">
+                <div class="paper-grid">
+                    
+                    <div class="paper-card">
+                        <h3>CausalVerse: Benchmarking Causal Representation Learning with Configurable High-Fidelity Simulations</h3>
+                        <p class="authors-list">Yunlong Deng, Peiyuan Zhu, Yan Li, Yifan Shen, Zijian Li, Guangyi Chen, Kun Zhang</p>
+                        <p class="venue">Advances in Neural Information Processing Systems (NeurIPS), 2025</p>
+                        <p class="abstract">
+                            We introduce CausalVerse, the first comprehensive benchmark for Causal Representation Learning (CRL). It features configurable, high-fidelity simulations across four diverse domains, providing ground truth access to causal variables and structures. CausalVerse enables rigorous, systematic evaluation of CRL methods, bridging the gap between complex visual data and causal reasoning.
+                        </p>
+                        <div class="paper-links">
+                            <a href="index.html" class="btn btn-primary"><i class="fas fa-globe"></i> Project Page</a>
+                            <a href="#" class="btn btn-secondary"><i class="fas fa-file-pdf"></i> Paper</a>
+                            <a href="https://github.com/CausalVerse/CausalVerse" class="btn btn-secondary"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+
+                    <div class="paper-card">
+                        <h3>MinT: Temporally-Controlled Video Generation with Minute-Long Capabilities</h3>
+                        <p class="authors-list">Peiyuan Zhu, Yan Li, Yunlong Deng, Yifan Shen</p>
+                        <p class="venue">International Conference on Learning Representations (ICLR), 2025</p>
+                        <p class="abstract">
+                            MinT is a novel video generation framework that accepts fine-grained temporal captions to create long, coherent videos with multiple sequential events. By conditioning on precise timestamps, our model demonstrates superior control over event ordering and timing compared to existing SOTA models, which often fail to generate events in the correct sequence.
+                        </p>
+                        <div class="paper-links">
+                            <a href="#" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Paper</a>
+                            <a href="#" class="btn btn-secondary"><i class="fab fa-github"></i> Code</a>
+                        </div>
+                    </div>
+
+                    <div class="paper-card">
+                        <h3>Causal Discovery in High-Dimensional Visual Data via Latent Representations</h3>
+                        <p class="authors-list">Guangyi Chen, Zijian Li, Kun Zhang</p>
+                        <p class="venue">International Conference on Machine Learning (ICML), 2024</p>
+                        <p class="abstract">
+                            This work proposes a novel method for discovering causal structures directly from high-dimensional visual data, such as images and videos. By learning disentangled latent representations that correspond to underlying causal factors, our approach successfully recovers causal graphs in settings where traditional methods fail, opening new avenues for understanding complex systems.
+                        </p>
+                        <div class="paper-links">
+                            <a href="#" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Paper</a>
+                            <a href="#" class="btn btn-secondary"><i class="fab fa-github"></i> Code</a>
+                            <a href="#" class="btn btn-secondary"><i class="fas fa-play-circle"></i> Video</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CausalVerse. All rights reserved.</p>
+            <div style="margin-top: 16px;">
+                <a href="https://github.com/CausalVerse/CausalVerse" target="_blank">GitHub</a>
+                <a href="https://huggingface.co/CausalVerse" target="_blank">HuggingFace</a>
+                <a href="mailto:contact@causalverse.org">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Theme Toggle Functionality ---
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const body = document.body;
+        const themeIcon = themeToggleButton.querySelector('i');
+
+        // Function to apply the theme
+        const applyTheme = (theme) => {
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                body.classList.remove('dark-mode');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        };
+
+        // Event listener for the toggle button
+        themeToggleButton.addEventListener('click', () => {
+            const isDarkMode = body.classList.contains('dark-mode');
+            const newTheme = isDarkMode ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+
+        // --- Run on Page Load ---
+        document.addEventListener("DOMContentLoaded", function() {
+            // Load theme from local storage or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            applyTheme(savedTheme);
+        });
+    </script>
+</body>
+</html>
